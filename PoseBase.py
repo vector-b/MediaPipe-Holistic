@@ -1,62 +1,50 @@
-from traceback import print_tb
-from unittest import result
 import cv2
 import mediapipe as mp
 import time
-
-from regex import R
-
+from pose_utilities import *
 
 mpPose = mp.solutions.pose
 mpDraw = mp.solutions.drawing_utils
-pose = mpPose.Pose()
+mp_holistic = mp.solutions.holistic
 
-
-
-
-
-
-
-#Instancia a captura do arquivo desejado
-capture = cv2.VideoCapture('gestures/5.mp4')
-
-#Tempo Inicial, utilizado para calculo de fps
-pTime = 0
-while(1):
-    ret , frame = capture.read()
-
-    #mpPose processa cada frame no formato RGB
-    frameRGB = cv2.cvtColor(frame,cv2.COLOR_RGB2BGR)
-    results = pose.process(frameRGB)
-
-    #Imprime os pontos focais da posição
-    #print(results.pose_landmarks)
-
-    R_landmmark = results.pose_landmarks
-    #Caso nesse frame tenha landmarks, imprime na tela os pontos e conexões 
-    if (R_landmmark):
-        mpDraw.draw_landmarks(frame, results.pose_landmarks, mpPose.POSE_CONNECTIONS)
-        for id, lm in enumerate(R_landmmark.landmark):
-            h, w, c = frame.shape
-            print(id, lm)
-            cx, cy = int(lm.x * w), int(lm.y * h)
-            cv2.circle(frame, (cx, cy), 3, (20,120,20), -1 )
-
-    cTime = time.time()
+holistic = mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5)
     
 
-    fps = 1/(cTime - pTime)
-    pTime = cTime
-    cv2.putText(frame, str(int(fps)), (60,60), cv2.FONT_HERSHEY_PLAIN, 3, (255,100,120),3)
+
+def main():
+    #0 for webcam
+    #1 for default video
+    path_to_file = 'gestures/4.mp4'
+    capture = request_capture(0, path_to_file)
+    pTime = 0
+
+    while(1):
+        ret , frame = capture.read()
+
+        #mpPose processa cada frame no formato RGB
+        frameRGB = cv2.cvtColor(frame,cv2.COLOR_RGB2BGR)
+        results = holistic.process(frameRGB)
+
+        #R_landmark = results.pose_landmarks
+
+        cTime = time.time()
+        
+        landmmark_work(results, mpPose, mpDraw, mp_holistic, frame)
+        
+        fps = 1/(cTime - pTime)
+        pTime = cTime
+
+        cv2.putText(frame, str(int(fps)), (60,60), cv2.FONT_HERSHEY_PLAIN, 3, (255,100,120),3)
+        cv2.imshow("Video", frame)
 
 
-    cv2.imshow("Video", frame)
+        k = cv2.waitKey(5) & 0xff
+        if k == 27:
+            break
 
-    #Press ESC to leave
-    k = cv2.waitKey(5) & 0xff
-    if k == 27:
-        break
+    capture.release()
+    cv2.destroyAllWindows()
 
-capture.release()
-cv2.destroyAllWindows()
 
+if __name__ == "__main__":
+    main()
