@@ -16,7 +16,7 @@ def main():
     #0 for webcam
     #1 for default video
     filename = 'coord.csv'
-    videopath = 'gestures/testing/airsquat.mp4'
+    videopath = 'gestures/testing/test.mp4'
 
     #Extrai as coordenadas dos videos indicados
     extract_features(mpPose, mpDraw, mp_holistic, path='./gestures', filename='coordinates.csv')
