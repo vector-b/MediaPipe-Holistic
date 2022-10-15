@@ -132,7 +132,9 @@ def training_with_videos(mpPose, mpDraw, mpHol, path=None, filename=None):
 
             capture.release()
             cv2.destroyAllWindows()
-        
+
+def predict_video_hls(mpPose, mpDraw, mpHol, path):
+           
         
         
 
