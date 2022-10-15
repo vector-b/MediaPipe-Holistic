@@ -51,7 +51,6 @@ def request_capture(type=0, path=None):
 
 
 def extract_features(mpPose, mpDraw, mpHol, path=None, filename=None):
-
     holistic = mpHol.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5)
     #path == root of directory with all classes
     if (path is None):
@@ -79,11 +78,13 @@ def extract_features(mpPose, mpDraw, mpHol, path=None, filename=None):
             capture = request_capture(1, filepath)
             pTime = 0
             while(1):
-                ret , frame = capture.read()
+                
 
                 #mpPose processa cada frame no formato RGB
 
                 try:
+                    ret , frame = capture.read()
+
                     image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     image.flags.writeable = False
 
@@ -142,7 +143,8 @@ def extract_features(mpPose, mpDraw, mpHol, path=None, filename=None):
             capture.release()
             cv2.destroyAllWindows()
 
-def training_model_video(filename,):
+
+def training_model_video(filename):
     print('Lendo arquivo CSV...')
     data = pd.read_csv(filename)
 
@@ -162,6 +164,23 @@ def training_model_video(filename,):
     
     print('Treinando o Classificador...')
     xgb.fit(X_train, y_train)
+    pipelines = {
+    'lr':make_pipeline(StandardScaler(), LogisticRegression()),
+    'rc':make_pipeline(StandardScaler(), RidgeClassifier()),
+    'rf':make_pipeline(StandardScaler(), RandomForestClassifier()),
+    'gb':make_pipeline(StandardScaler(), GradientBoostingClassifier()),
+    }
+
+    fit_models = {}
+    for algo, pipeline in pipelines.items():
+        model = pipeline.fit(X_train, y_train)
+        fit_models[algo] = model
+
+    out = fit_models['rc'].predict(X_test)
+
+    for i in fit_models:
+        out = fit_models[i].predict(X_test)
+        print(f1_score(out,y_test, average='macro'))
 
     predicted = xgb.predict(X_test)
     f1 = f1_score(predicted,y_test, average='macro')
@@ -190,6 +209,17 @@ def generate_video_holistic(le, model,mpPose, mpDraw, mpHol, videopath, mode):
             
             fps = 1/(cTime - pTime)
             pTime = cTime
+            
+            imageWidth = frame.shape[1]
+            imageHeight = frame.shape[0]
+
+            fontScale = (imageWidth * imageHeight) / (1000 * 1000)
+            
+            upperLeftTextOriginX = int(imageWidth * 0.05)
+            upperLeftTextOriginY = int(imageHeight * 0.30)
+
+            lowerLeftTextOriginX = upperLeftTextOriginX
+            lowerLeftTextOriginY = int(imageHeight * 0.50)
 
             cv2.putText(frame, str(int(fps)), (60,60), cv2.FONT_HERSHEY_PLAIN, 3, (250,0,90),3)
             
@@ -208,27 +238,27 @@ def generate_video_holistic(le, model,mpPose, mpDraw, mpHol, videopath, mode):
                 # Concate rows
                 
                 row = pose_row+face_row
-                print('passou da row')
 
                 
                 X = np.array(row).reshape(1,-1)
                 body_language_class = le.inverse_transform(model.predict(X))
                 body_language_prob = model.predict_proba(X)
 
+
                 # Caixa de Info
                 #cv2.rectangle(frame, (50,380), (250, 130), (245, 117, 16), -1)
                 
                 # Display Class
                 cv2.putText(frame, 'CLASS'
-                            , (50,400), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1, cv2.LINE_AA)
+                            , (upperLeftTextOriginX,upperLeftTextOriginY), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1, cv2.LINE_AA)
                 cv2.putText(frame, body_language_class[0]
-                            , (50,430), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 233), 2, cv2.LINE_AA)
+                            , (upperLeftTextOriginX,upperLeftTextOriginY+30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 233), 2, cv2.LINE_AA)
                 
                 # Display Probability
                 cv2.putText(frame, 'PROBABILITY'
-                            , (50,480), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1, cv2.LINE_AA)
+                            , (lowerLeftTextOriginX,lowerLeftTextOriginY), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1, cv2.LINE_AA)
                 cv2.putText(frame, str(round(body_language_prob.max(),2))
-                            , (50,510), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 233), 2, cv2.LINE_AA)
+                            , (lowerLeftTextOriginX,lowerLeftTextOriginY+30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 233), 2, cv2.LINE_AA)
             except:
                 pass
 
