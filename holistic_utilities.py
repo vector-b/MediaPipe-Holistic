@@ -7,12 +7,15 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
-from sklearn.metrics import f1_score
+from sklearn.metrics import accuracy_score, f1_score
 from sklearn.pipeline import make_pipeline 
 from sklearn.preprocessing import StandardScaler 
 from sklearn.linear_model import LogisticRegression, RidgeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from xgboost import XGBClassifier
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import KFold
+from imblearn.over_sampling import SMOTE
 
 
 num_coords = 501
@@ -148,40 +151,52 @@ def training_model_video(filename):
     data = pd.read_csv(filename)
 
     classes = data['class'].unique()
+    classes_size = data['class'].value_counts()
 
     print('Classes encontradas: ', classes)
+
+    print('Tammanho das classes: ', classes_size)
     le = preprocessing.LabelEncoder()
 
     data['class'] = le.fit_transform(data['class'])
 
+
+        
+    #Train the model
+
+    pipelines = {
+    'rf':make_pipeline(StandardScaler(), RandomForestClassifier()),
+    #'gb':make_pipeline(StandardScaler(), GradientBoostingClassifier()),
+    'xgb':make_pipeline(StandardScaler(), XGBClassifier(n_estimators=500))
+    }
+    choosed_model = 'xgb'
+
+    #k = 3
+    #kf = KFold(n_splits=k, random_state=None)
+    
     X = data.iloc[:, 1:]
     X = X.values
     y = data.iloc[:, :1].values.ravel()
 
+    oversample = SMOTE(sampling_strategy='auto', n_jobs=-1, random_state=42)
+    X, y = oversample.fit_resample(X, y)
+
+    print('Tammanho das classes SMOTE: ', np.unique(y, return_counts=True))
+
     print('Separando conjuntos de Treino e teste..')
-    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.2, random_state=42)
-    
+    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.3, random_state=92)
+
     print('Treinando o Classificador...')
-    pipelines = {
-    'rf':make_pipeline(StandardScaler(), RandomForestClassifier()),
-    #'gb':make_pipeline(StandardScaler(), GradientBoostingClassifier()),
-    'xgb':make_pipeline(StandardScaler(), XGBClassifier())
-    }
-    choosed_model = 'xgb'
-    fit_models = {}
-    for algo, pipeline in pipelines.items():
-        model = pipeline.fit(X_train, y_train)
-        fit_models[algo] = model
+    model = pipelines[choosed_model]
+    model.fit(X_train, y_train)
 
-    for i in fit_models:
-        out = fit_models[i].predict(X_test)
-        print(f1_score(out,y_test, average='macro'))
-
-    predicted = fit_models[choosed_model].predict(X_test)
-    f1 = f1_score(predicted,y_test, average='macro')
+    predicted = model.predict(X_test)
+    f1 = f1_score(predicted,y_test, average='weighted')
+    accuracy = accuracy_score(predicted, y_test)
+    print('Accuracy: {}'.format(accuracy))
     print('F1-Score: {}'.format(f1))
 
-    return le, fit_models[choosed_model]
+    return le, model
 
 def generate_video_holistic(le, model,mpPose, mpDraw, mpHol, videopath, mode):
     holistic = mpHol.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5)
