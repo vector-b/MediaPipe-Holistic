@@ -162,7 +162,7 @@ def training_model_video(filename):
     print('Treinando o Classificador...')
     pipelines = {
     'rf':make_pipeline(StandardScaler(), RandomForestClassifier()),
-    'gb':make_pipeline(StandardScaler(), GradientBoostingClassifier()),
+    #'gb':make_pipeline(StandardScaler(), GradientBoostingClassifier()),
     'xgb':make_pipeline(StandardScaler(), XGBClassifier())
     }
     choosed_model = 'xgb'

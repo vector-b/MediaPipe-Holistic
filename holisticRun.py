@@ -22,11 +22,10 @@ def main():
         videopath = ''
 
 
-    #Extrai as coordenadas dos videos indicados
     #Realiza o treinamento do modelo com o CSV obtido na função anterior
     le, model = training_model_video(filename)
 
-    #Mode - 1 pra video, 2 pra webcam
+    #Mode - 1 pra video, 0 pra webcam
     print('Exibindo video teste...')
     generate_video_holistic(le, model,mpPose, mpDraw, mp_holistic, videopath, mode)
 
