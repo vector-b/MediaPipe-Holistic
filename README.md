@@ -40,9 +40,9 @@ Neste projeto também está disponível uma DEMO, correspondente ao arquivo *hol
 
 <pre><code>python holisticDemo.py</code></pre>
 
-Os arquivos atuais na pasta Gestures são exemplos retirados de videos no YouTube e podem ser removidos ou acrescentados de acordo com a preferência do usuário.
+A Demo tem dependência das pastas contidas neste repositório, portanto pode apresentar problemas no caso de remoção. Os arquivos atuais na pasta Gestures são exemplos retirados de videos no YouTube e podem ser removidos ou acrescentados de acordo com a preferência do usuário, estarei disponibilizando mais dados para treino neste [link](teste.com)
 
-**Have Fun!**
+**DIVIRTA-SE!!**
 
 ![alt text](dancing.gif "DQ-DANCE")
 

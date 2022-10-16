@@ -59,6 +59,7 @@ def extract_features(mpPose, mpDraw, mpHol, path='gestures', filename='coord.csv
     sub_dir = [name for name in os.listdir(dir) if os.path.isdir(os.path.join(dir, name))]
 
     landmarks_class = ['class']
+    
     for i in range (1, num_coords+1):
         landmarks_class += ['x{}'.format(i), 'y{}'.format(i) , 'z{}'.format(i), 'v{}'.format(i)]
 
@@ -68,6 +69,7 @@ def extract_features(mpPose, mpDraw, mpHol, path='gestures', filename='coord.csv
     
     for i in sub_dir:
         class_name = i
+        print('Classe atual: {}'.format(i))
         path_to_file = dir+'/'+ i
         files = [name for name in os.listdir(path_to_file) if os.path.isfile((os.path.join(path_to_file, name)))]
         for j in files:
