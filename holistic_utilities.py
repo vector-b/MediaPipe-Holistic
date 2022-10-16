@@ -12,6 +12,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler 
 from sklearn.linear_model import LogisticRegression, RidgeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from xgboost import XGBClassifier
 
 
 num_coords = 501
@@ -105,7 +106,7 @@ def extract_features(mpPose, mpDraw, mpHol, path=None, filename=None):
                     pTime = cTime
                 
                     cv2.putText(frame, str(int(fps)), (60,60), cv2.FONT_HERSHEY_PLAIN, 3, (255,100,120),3)
-                    cv2.imshow("Video", frame)
+                    cv2.imshow(class_name, frame)
 
 
                     try:
@@ -148,45 +149,41 @@ def training_model_video(filename):
     print('Lendo arquivo CSV...')
     data = pd.read_csv(filename)
 
+    classes = data['class'].unique()
+
+    print('Classes encontradas: ', classes)
     le = preprocessing.LabelEncoder()
 
     data['class'] = le.fit_transform(data['class'])
 
     X = data.iloc[:, 1:]
-    y = data.iloc[:, :1]
+    X = X.values
+    y = data.iloc[:, :1].values.ravel()
 
     print('Separando conjuntos de Treino e teste..')
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.2, random_state=42)
-
-    from xgboost import XGBClassifier
-
-    xgb = XGBClassifier(n_estimators = 1000)
     
     print('Treinando o Classificador...')
-    xgb.fit(X_train, y_train)
     pipelines = {
-    'lr':make_pipeline(StandardScaler(), LogisticRegression()),
-    'rc':make_pipeline(StandardScaler(), RidgeClassifier()),
     'rf':make_pipeline(StandardScaler(), RandomForestClassifier()),
     'gb':make_pipeline(StandardScaler(), GradientBoostingClassifier()),
+    'xgb':make_pipeline(StandardScaler(), XGBClassifier())
     }
-
+    choosed_model = 'xgb'
     fit_models = {}
     for algo, pipeline in pipelines.items():
         model = pipeline.fit(X_train, y_train)
         fit_models[algo] = model
 
-    out = fit_models['rc'].predict(X_test)
-
     for i in fit_models:
         out = fit_models[i].predict(X_test)
         print(f1_score(out,y_test, average='macro'))
 
-    predicted = xgb.predict(X_test)
+    predicted = fit_models[choosed_model].predict(X_test)
     f1 = f1_score(predicted,y_test, average='macro')
     print('F1-Score: {}'.format(f1))
 
-    return le, xgb
+    return le, fit_models[choosed_model]
 
 def generate_video_holistic(le, model,mpPose, mpDraw, mpHol, videopath, mode):
     holistic = mpHol.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5)
@@ -215,15 +212,18 @@ def generate_video_holistic(le, model,mpPose, mpDraw, mpHol, videopath, mode):
 
             fontScale = (imageWidth * imageHeight) / (1000 * 1000)
             
-            upperLeftTextOriginX = int(imageWidth * 0.05)
+            fpsX = int(imageWidth * 0.05)
+            fpsY = int(imageHeight * 0.10)
+
+            upperLeftTextOriginX = fpsX
             upperLeftTextOriginY = int(imageHeight * 0.30)
 
             lowerLeftTextOriginX = upperLeftTextOriginX
             lowerLeftTextOriginY = int(imageHeight * 0.50)
 
-            cv2.putText(frame, str(int(fps)), (60,60), cv2.FONT_HERSHEY_PLAIN, 3, (250,0,90),3)
+            cv2.putText(frame, 'FPS', (fpsX,fpsY), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1, cv2.LINE_AA)
+            cv2.putText(frame, str(int(fps)), (fpsX,fpsY+40), cv2.FONT_HERSHEY_PLAIN, 3, (250,0,90),3)
             
-
             try:
                 # Extract Pose landmarks
                 pose = results.pose_landmarks.landmark
