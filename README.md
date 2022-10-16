@@ -47,7 +47,13 @@ A Demo tem dependência das pastas contidas neste repositório, portanto pode ap
 ![alt text](dancing.gif "DQ-DANCE")
 
 
+TO-DO by priority
 
+*  TSP01
+*  TSP05
+*  TSP03
+*  TSP04
+*  TSP02
 
 
 
