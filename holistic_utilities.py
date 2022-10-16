@@ -51,14 +51,10 @@ def request_capture(type=0, path=None):
     return capture
 
 
-def extract_features(mpPose, mpDraw, mpHol, path=None, filename=None):
+def extract_features(mpPose, mpDraw, mpHol, path='gestures', filename='coord.csv'):
     holistic = mpHol.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5)
     #path == root of directory with all classes
-    if (path is None):
-        path = './gestures'
-    if (filename is None):
-        filename = 'coord.csv'
-    
+
     dir = path
     sub_dir = [name for name in os.listdir(dir) if os.path.isdir(os.path.join(dir, name))]
 
