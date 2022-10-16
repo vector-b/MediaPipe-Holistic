@@ -28,8 +28,8 @@ Estando tudo em ordem, temos alguns arquivos que podem ser utilizados:
         
 
 **Exemplo de execução:**
-<pre><code>python holisticTrain.py /gestures coords.csv
-python holisticRun.py coords.csv /testing/test.mp4
+<pre><code>python holisticTrain.py gestures coords.csv
+python holisticRun.py coords.csv testing/test.mp4
 </code></pre>
 
 **IMPORTANTE**
@@ -39,6 +39,14 @@ python holisticRun.py coords.csv /testing/test.mp4
 Neste projeto também está disponível uma DEMO, correspondente ao arquivo *holisticDemo.py*, basta executá-lo que um teste pré-definido será realizado:
 
 <pre><code>python holisticDemo.py</code></pre>
+
+Os arquivos atuais na pasta Gestures são exemplos retirados de videos no YouTube e podem ser removidos ou acrescentados de acordo com a preferência do usuário.
+
+**Have Fun!**
+
+![alt text](dancing.gif "DQ-DANCE")
+
+
 
 
 
