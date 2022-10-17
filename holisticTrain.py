@@ -15,6 +15,7 @@ def main():
     filename = input()
 
     #Extrai as coordenadas dos videos indicados
+    print('Iniciando extração...')
     extract_features(mpPose, mpDraw, mp_holistic, path, filename=filename)
 
 if __name__ == "__main__":

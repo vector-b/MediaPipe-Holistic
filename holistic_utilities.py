@@ -160,6 +160,7 @@ def training_model_video(filename):
 
     data['class'] = le.fit_transform(data['class'])
 
+    data.drop_duplicates(subset=None, keep= 'first', inplace=False)
 
         
     #Train the model
@@ -178,10 +179,10 @@ def training_model_video(filename):
     X = X.values
     y = data.iloc[:, :1].values.ravel()
 
-    oversample = SMOTE(sampling_strategy='auto', n_jobs=-1, random_state=42)
-    X, y = oversample.fit_resample(X, y)
+    #oversample = SMOTE(sampling_strategy='auto', n_jobs=-1, random_state=42)
+    #X, y = oversample.fit_resample(X, y)
 
-    print('Tammanho das classes SMOTE: ', np.unique(y, return_counts=True))
+    #print('Tammanho das classes SMOTE: ', np.unique(y, return_counts=True))
 
     print('Separando conjuntos de Treino e teste..')
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.3, random_state=92)

@@ -16,7 +16,7 @@ Para a execução do software é necessário instalar os pacotes básicos dispon
 
 Estando tudo em ordem, temos alguns arquivos que podem ser utilizados:
 
-*   *holisticTrain.py* - Extração das features (pontos da face e do corpo) para um arquivo csv 
+*   *holisticTrain.py* - Extração das features (pontos da face e do corpo) para um arquivo csv, o software irá extrair as Features de **TODOS** os arquivos da pasta escolhida, isso pode levar um tempo... 
     *   Opções de configurações suportadas:
         *    **path** - Endereço para onde devem ser encontradas as classes, o padrão é o diretórios */gestures*
         *    **filename** - Nome ou endereço do arquivo no qual o csv será gerado, o padrão é o arquivo *coords.csv*
@@ -29,7 +29,7 @@ Estando tudo em ordem, temos alguns arquivos que podem ser utilizados:
 
 **Exemplo de execução:**
 <pre><code>python holisticTrain.py gestures coords.csv
-python holisticRun.py coords.csv test_files/bar.mp4
+python holisticRun.py coords.csv test_files/taxi_driver.mp4
 </code></pre>
 
 **IMPORTANTE**
