@@ -40,7 +40,7 @@ Neste projeto também está disponível uma DEMO, correspondente ao arquivo *hol
 
 <pre><code>python holisticDemo.py</code></pre>
 
-A Demo tem dependência das pastas contidas neste repositório, portanto pode apresentar problemas no caso de remoção. Os arquivos atuais na pasta Gestures são exemplos (com 5 classes) retirados de videos no YouTube e podem ser removidos ou acrescentados de acordo com a preferência do usuário, estarei disponibilizando mais dados para treino neste [link](teste.com)
+A Demo tem dependência das pastas contidas neste repositório, portanto pode apresentar problemas no caso de remoção. Os arquivos atuais na pasta Gestures são exemplos (com 5 classes) retirados de videos no YouTube e podem ser removidos ou acrescentados de acordo com a preferência do usuário.
 
 **DIVIRTA-SE!!**
 
@@ -54,7 +54,3 @@ TO-DO by priority
 *  TSP03
 *  TSP04
 *  TSP02
-
-
-
-
