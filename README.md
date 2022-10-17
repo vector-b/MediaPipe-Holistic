@@ -29,7 +29,7 @@ Estando tudo em ordem, temos alguns arquivos que podem ser utilizados:
 
 **Exemplo de execução:**
 <pre><code>python holisticTrain.py gestures coords.csv
-python holisticRun.py coords.csv test_files/taxi_driver.mp4
+python holisticRun.py coords.csv test_files/rocky.mp4
 </code></pre>
 
 **IMPORTANTE**
